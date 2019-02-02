@@ -4,10 +4,20 @@ public class Player {
 
     private String name;
     private int score;
+    private boolean gameMaster;
 
-    public Player(String name) {
+    public Player(String name, boolean gameMaster) {
         this.name = name;
+        this.gameMaster = gameMaster;
         this.score = 0;
+    }
+
+    public boolean isGameMaster() {
+        return gameMaster;
+    }
+
+    public void setGameMaster(boolean gameMaster) {
+        this.gameMaster = gameMaster;
     }
 
     public String getName() {

@@ -11,6 +11,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static java.lang.Math.max;
+
 public class QuestionsDBHelper extends SQLiteOpenHelper {
 
     private static String DB_NAME = "sixseconds";
@@ -53,6 +55,49 @@ public class QuestionsDBHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put("QUESTION_TEXT", questionText);
         db.insert("QUESTION", null  , contentValues);
+    }
+
+    public String getQuestionById(int id) {
+        String[] arrayId = new String[] {String.valueOf(id)};
+        SQLiteDatabase db =  getDB();
+        if (db == null) {
+            return null;
+        };
+        Cursor cursor = db.query("QUESTION", new String[] {"QUESTION_TEXT"}, "_id = ?", arrayId , null, null, null);
+        if (cursor.moveToFirst()) {
+            return cursor.getString(0);
+        } else {
+            return null;
+        }
+    }
+
+    public ArrayList<Integer> getRandomIds(int numberOfQuestions) {
+        int recievedQuestion = 0;
+        int count = 0;
+        ArrayList<Integer> fullIDList = new ArrayList<>();
+        ArrayList<Integer> randomIDList = new ArrayList<>();
+        Random random = new Random();
+        SQLiteDatabase db =  getDB();
+        if (db == null) {
+            return null;
+        };
+        Cursor cursor = db.query("QUESTION", new String[] {"_id"}, null, null, null, null, null);
+        count = cursor.getCount();
+        if (count > 0) {
+            while (cursor.moveToNext()) {
+                fullIDList.add(cursor.getInt(0));
+            }
+
+            int max = max(count, numberOfQuestions);
+            while (recievedQuestion < max) {
+                int tempId = fullIDList.get(random.nextInt(count));
+                if (!randomIDList.contains(tempId)) {
+                    randomIDList.add(tempId);
+                    recievedQuestion++;
+                }
+            }
+        }
+        return randomIDList;
     }
 
     public Cursor getRandomQuestions(int numberOfQuestions) {
