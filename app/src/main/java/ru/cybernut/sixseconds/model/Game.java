@@ -8,20 +8,29 @@ import java.util.ArrayList;
 
 public class Game implements Serializable {
 
-    private static final int MAX_PLAYERS = 6;
+    public static final int MAX_PLAYERS = 6;
     private QuestionsDBHelper dbHelper;
     private SQLiteDatabase db;
 
     private String question;
     private int numberOfQuestions = 0;
     private int numberOfPlayers = 0;
-    private Player[] players;
+    private ArrayList<Player> players;
+    private int currentPlayerIndex;
     private ArrayList<Integer> randomIdsList;
 
     public Game(int numberOfQuestions, int numberOfPlayers) {
         this.numberOfQuestions = numberOfQuestions;
         this.numberOfPlayers = numberOfPlayers;
-        this.players = new Player[MAX_PLAYERS];
+        this.players = new ArrayList<>();
+        this.currentPlayerIndex = 0;
+    }
+
+    public Game(int numberOfQuestions, ArrayList<String> playerNames) {
+        this.numberOfQuestions = numberOfQuestions;
+        this.players = new ArrayList<>();
+        createPlayers(playerNames);
+        this.numberOfPlayers = players.size();
     }
 
     public boolean initialize(Context context) {
@@ -44,6 +53,29 @@ public class Game implements Serializable {
             }
         }
         return false;
+    }
+
+    public void createPlayers(ArrayList<String> playerNames) {
+        for (String playerName:playerNames) {
+            Player player = new Player(playerName, false);
+            players.add(player);
+        }
+    }
+
+    public void getNextPlayer() {
+
+        currentPlayerIndex++;
+        if(currentPlayerIndex == numberOfPlayers) {
+            currentPlayerIndex = 0;
+        }
+    }
+
+    public Player getCurrentPlayer() {
+        return players.get(currentPlayerIndex);
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
     }
 
     public String getQuestionText() {
